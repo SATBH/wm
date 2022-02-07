@@ -7,7 +7,7 @@ use xcb::{
 use xcb;
 use std::process::Command;
 fn main() {
-    let (connection, _) = Connection::connect(Some(":2")).unwrap();
+    let (connection, _) = Connection::connect(None).unwrap();
     let screen = connection.get_setup().roots().nth(0).unwrap();
     let mut windows: Vec<Window> = Vec::new();
     let root: Window = screen.root();
@@ -53,7 +53,7 @@ fn main() {
 
 fn set_wallpaper() {
     Command::new("sh")
-        .args(["-c", "DISPLAY=:2 hsetroot -cover /home/satbh/wallpapers/everforest"])
+        .args(["-c", "hsetroot -cover /home/satbh/wallpapers/everforest"])
         .output()
         .unwrap();
 }
@@ -75,19 +75,19 @@ fn manage_windows(connection: &Connection ,rootwh: (u32, u32), windows: &[Window
         _ => {
             let (width, height) = rootwh; 
             let master_values: [(u16, u32); 4] = [
-                (xcb::CONFIG_WINDOW_X as u16, 0),
-                (xcb::CONFIG_WINDOW_Y as u16, 0),
-                (xcb::CONFIG_WINDOW_WIDTH as u16, width/2),
-                (xcb::CONFIG_WINDOW_HEIGHT as u16, height)
+                (xcb::CONFIG_WINDOW_X as u16, 10),
+                (xcb::CONFIG_WINDOW_Y as u16, 10),
+                (xcb::CONFIG_WINDOW_WIDTH as u16, width/2 - 20),
+                (xcb::CONFIG_WINDOW_HEIGHT as u16, height - 20)
             ];
             xcb::configure_window(&connection, windows[0], &master_values);
             for (index, &window) in windows[1..].into_iter().enumerate() {
                 let  (width, height) = (width/2, height/(windows.len() as u32 - 1));
                 let values: [(u16, u32); 4] = [
-                    (xcb::CONFIG_WINDOW_X as u16, width),
-                    (xcb::CONFIG_WINDOW_Y as u16, height * index as u32),
-                    (xcb::CONFIG_WINDOW_WIDTH as u16, width),
-                    (xcb::CONFIG_WINDOW_HEIGHT as u16, height)
+                    (xcb::CONFIG_WINDOW_X as u16, width + 10),
+                    (xcb::CONFIG_WINDOW_Y as u16, 10 + height * index as u32),
+                    (xcb::CONFIG_WINDOW_WIDTH as u16, width - 20),
+                    (xcb::CONFIG_WINDOW_HEIGHT as u16, height - 20)
                 ];
                 xcb::configure_window(&connection, window, &values);
             }
