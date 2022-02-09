@@ -52,6 +52,7 @@ fn main() {
             xcb::DESTROY_NOTIFY => {
                 let casted_event: &xcb::DestroyNotifyEvent =
                     unsafe { xcb::cast_event(event as &xcb::GenericEvent) };
+                layout.remove_window(casted_event.window())
             }
             _ => {}
         }
