@@ -45,7 +45,10 @@ fn main() {
                 for (window, geometry) in geometries {
                     connection.set_window_configuration(window, geometry)
                 }
+                connection.set_window_focus(casted_event.window());
+
             }
+
             /*
              * DESTROY_NOTIFY handler. It's called whenever a window dies.
              */

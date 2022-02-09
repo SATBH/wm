@@ -3,8 +3,8 @@
  */
 #[derive(Clone)]
 pub struct Geometry {
-    position: (u32, u32),
-    size: (u32, u32),
+    pub position: (u32, u32),
+    pub size: (u32, u32),
 }
 
 impl Geometry {
@@ -14,8 +14,24 @@ impl Geometry {
             size: (width, height),
         }
     }
+
     pub fn size(&self) -> (u32, u32) {
         self.size
+    }
+
+    pub fn scaled(&self, scale_factor: f32) -> Geometry {
+        Geometry {
+            position: self.position,
+            size: ((self.size.0 as f32 * scale_factor) as u32,
+                   (self.size.1 as f32 * scale_factor) as u32)
+        }
+    }
+
+    pub fn moved(&self, movement: (u32, u32)) -> Geometry {
+        Geometry {
+            position: (self.position.0 + movement.0, self.position.1 + movement.1),
+            size: self.size
+        }
     }
 
     pub fn as_config_values(&self) -> [(u16, u32); 4] {
