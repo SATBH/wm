@@ -4,11 +4,9 @@ use xcb;
  * Common Interface for layouts to interact with the window manager.
  */
 pub trait Layout {
-    /// Creates a list of the geometries that need to be set on the managed windows
     fn get_geometries(&self, viewport: &Geometry) -> Vec<(xcb::Window, Geometry)>;
-    /// Appends a new window to the layout
     fn add_window(&mut self, window: xcb::Window);
-    //    fn remove_window(&mut self, window: xcb::Window);
+    fn remove_window(&mut self, window: xcb::Window);
     //    fn swap_windows(&mut self, first: xcb::Window, second: xcb::Window) -> [xcb::Window;2];
 }
 
@@ -47,7 +45,12 @@ impl Layout for StackLayout {
         }
         acc
     }
+
     fn add_window(&mut self, window: xcb::Window) {
         self.windows.push(window)
+    }
+
+    fn remove_window(&mut self, window: xcb::Window) {
+        self.windows.retain(|&x| x != window);
     }
 }
