@@ -1,19 +1,27 @@
 use crate::x::Geometry;
 use xcb;
-
+/*
+ * Common Interface for layouts to interact with the window manager.
+ */
 pub trait Layout {
+    /// Creates a list of the geometries that need to be set on the managed windows
     fn get_geometries(&self, viewport: &Geometry) -> Vec<(xcb::Window, Geometry)>;
+    /// Appends a new window to the layout
     fn add_window(&mut self, window: xcb::Window);
-//    fn remove_window(&mut self, window: xcb::Window);
-//    fn swap_windows(&mut self, first: xcb::Window, second: xcb::Window) -> [xcb::Window;2];
+    //    fn remove_window(&mut self, window: xcb::Window);
+    //    fn swap_windows(&mut self, first: xcb::Window, second: xcb::Window) -> [xcb::Window;2];
 }
 
+/*
+ * Currently default layout.
+ */
 pub struct StackLayout {
     windows: Vec<xcb::Window>,
 }
+
 impl StackLayout {
     pub fn new() -> StackLayout {
-        StackLayout { windows: vec![]}
+        StackLayout { windows: vec![] }
     }
 }
 
@@ -21,18 +29,19 @@ impl Layout for StackLayout {
     fn get_geometries(&self, viewport: &Geometry) -> Vec<(xcb::Window, Geometry)> {
         let mut acc = Vec::new();
         match self.windows.len() {
-            0 => {},
+            0 => {}
             1 => {
                 acc.push((self.windows[0], viewport.clone()));
-            },
+            }
             _ => {
                 let (width, mut height) = viewport.size();
-                acc.push((self.windows[0], Geometry::new(
-                    0,0, width/2, height))
-                );
-                height = height/(self.windows.len() as u32 - 1);
+                acc.push((self.windows[0], Geometry::new(0, 0, width / 2, height)));
+                height = height / (self.windows.len() as u32 - 1);
                 for (index, &window) in self.windows[1..].iter().enumerate() {
-                    acc.push((window, Geometry::new(width/2, height * index as u32, width, height)))
+                    acc.push((
+                        window,
+                        Geometry::new(width / 2, height * index as u32, width, height),
+                    ))
                 }
             }
         }

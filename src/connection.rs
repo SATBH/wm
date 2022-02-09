@@ -1,6 +1,8 @@
 use crate::x;
 use xcb;
-
+/*
+ * Abstraction over xcb::base::Connection.
+ */
 pub struct Connection {
     connection: xcb::base::Connection,
     screen_id: i32,
@@ -15,18 +17,23 @@ impl Connection {
         }
     }
 
+    /// Returns the xcb::base::Connection it holds
     pub fn as_xcb_connection(&self) -> &xcb::base::Connection {
         &self.connection
     }
 
+    /// Flushes the queued events into the X server.
     pub fn flush(&self) {
         self.connection.flush();
     }
 
+    /// Blocking operation that returns an X event whenever it occurs.
     pub fn get_event(&self) -> Option<xcb::base::Event<xcb::ffi::xcb_generic_event_t>> {
         self.connection.wait_for_event()
     }
 
+    /// Attaches an event listener into the root window of the Xsession. Fails if
+    /// another window manager is already running
     pub fn connect_as_window_manager(&self) {
         use xcb::{
             CW_EVENT_MASK, EVENT_MASK_SUBSTRUCTURE_NOTIFY, EVENT_MASK_SUBSTRUCTURE_REDIRECT,
@@ -37,6 +44,7 @@ impl Connection {
         )]);
     }
 
+    /// Gets the screen the connection was attached to
     pub fn get_screen(&self) -> xcb::Screen {
         self.connection
             .get_setup()
@@ -44,17 +52,19 @@ impl Connection {
             .nth(self.screen_id as usize)
             .unwrap()
     }
-
+    /// Sets a listener for X events on a window based on the masks provided
     pub fn set_window_attributes_checked(&self, window: xcb::Window, masks: &[(u32, u32)]) {
         xcb::change_window_attributes_checked(&self.connection, window, masks)
             .request_check()
             .unwrap();
     }
 
+    /// Sets a listener for X events on the root window based on the masks provided
     pub fn set_root_attributes_checked(&self, masks: &[(u32, u32)]) {
         self.set_window_attributes_checked(self.get_screen().root(), masks);
     }
 
+    /// Sets window properties
     pub fn set_window_configuration(&self, window: xcb::Window, new_geometry: x::Geometry) {
         xcb::configure_window(&self.connection, window, &new_geometry.as_config_values());
     }

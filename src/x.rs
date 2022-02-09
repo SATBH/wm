@@ -1,7 +1,10 @@
+/*
+ * Abstraction over window geometries to implement some conveniences
+ */
 #[derive(Clone)]
 pub struct Geometry {
     position: (u32, u32),
-    size: (u32,u32),
+    size: (u32, u32),
 }
 
 impl Geometry {
