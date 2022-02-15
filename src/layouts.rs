@@ -38,7 +38,7 @@ impl Layout for StackLayout {
                 for (index, &window) in self.windows[1..].iter().enumerate() {
                     acc.push((
                         window,
-                        Geometry::new(width / 2, height * index as u32, width, height),
+                        Geometry::new(width / 2, height * index as u32, width/2, height),
                     ))
                 }
             }
