@@ -22,15 +22,17 @@ impl Geometry {
     pub fn scaled(&self, scale_factor: f32) -> Geometry {
         Geometry {
             position: self.position,
-            size: ((self.size.0 as f32 * scale_factor) as u32,
-                   (self.size.1 as f32 * scale_factor) as u32)
+            size: (
+                (self.size.0 as f32 * scale_factor) as u32,
+                (self.size.1 as f32 * scale_factor) as u32,
+            ),
         }
     }
 
     pub fn moved(&self, movement: (u32, u32)) -> Geometry {
         Geometry {
             position: (self.position.0 + movement.0, self.position.1 + movement.1),
-            size: self.size
+            size: self.size,
         }
     }
 

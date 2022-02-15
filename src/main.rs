@@ -17,7 +17,7 @@ fn main() {
     /*
      * Current default Layout based on dwm. (Master & Stack)
      */
-    let mut layout = layouts::StackLayout::new();
+    let mut layout = layouts::StackLayout::new(5);
 
     /*
      * This is the event loop. Where we receive all the
@@ -46,7 +46,6 @@ fn main() {
                     connection.set_window_configuration(window, geometry)
                 }
                 connection.set_window_focus(casted_event.window());
-
             }
 
             /*

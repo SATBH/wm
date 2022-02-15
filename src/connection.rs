@@ -22,7 +22,6 @@ impl Connection {
         &self.connection
     }
 
-
     /// Flushes the queued events into the X server.
     pub fn flush(&self) {
         self.connection.flush();
@@ -72,7 +71,11 @@ impl Connection {
 
     /// Sets window focus
     pub fn set_window_focus(&self, window: xcb::Window) {
-        xcb::xproto::set_input_focus(&self.connection, xcb::xproto::INPUT_FOCUS_POINTER_ROOT as u8, window, xcb::base::CURRENT_TIME);
+        xcb::xproto::set_input_focus(
+            &self.connection,
+            xcb::xproto::INPUT_FOCUS_POINTER_ROOT as u8,
+            window,
+            xcb::base::CURRENT_TIME,
+        );
     }
-
 }
