@@ -1,12 +1,13 @@
 use crate::x::Geometry;
-use xcb; /*
-          * Common Interface for layouts to interact with the window manager.
-          */
+use xcb;
+
+/*
+ * Common Interface for layouts to interact with the window manager.
+ */
 pub trait Layout {
     fn get_geometries(&self, viewport: &Geometry) -> Vec<(xcb::Window, Geometry)>;
     fn add_window(&mut self, window: xcb::Window);
     fn remove_window(&mut self, window: xcb::Window);
-    //    fn swap_windows(&mut self, first: xcb::Window, second: xcb::Window) -> [xcb::Window;2];
 }
 
 /*

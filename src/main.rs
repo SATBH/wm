@@ -1,12 +1,25 @@
 mod connection;
 mod layouts;
 mod x;
+use connection::Connection;
 use layouts::Layout;
 
 use xcb;
 
+fn manage_windows(connection: &Connection, manager: &impl Layout) {
+    let geometries = manager.get_geometries(&x::Geometry::new(
+        0,
+        0,
+        connection.get_screen().width_in_pixels() as u32,
+        connection.get_screen().height_in_pixels() as u32,
+    ));
+
+    for (window, geometry) in geometries {
+        connection.set_window_configuration(window, geometry);
+    }
+}
+
 fn main() {
-    use connection::Connection;
     /*
      * Here we instantiate a connection and make it so
      * it listens for events we care about in X, like
@@ -35,16 +48,7 @@ fn main() {
                     unsafe { xcb::cast_event(event as &xcb::GenericEvent) };
                 xcb::map_window(connection.as_xcb_connection(), casted_event.window());
                 layout.add_window(casted_event.window());
-                let geometries = layout.get_geometries(&x::Geometry::new(
-                    0,
-                    0,
-                    connection.get_screen().width_in_pixels() as u32,
-                    connection.get_screen().height_in_pixels() as u32,
-                ));
-
-                for (window, geometry) in geometries {
-                    connection.set_window_configuration(window, geometry)
-                }
+                manage_windows(&connection, &layout);
                 connection.set_window_focus(casted_event.window());
             }
 
@@ -54,7 +58,8 @@ fn main() {
             xcb::DESTROY_NOTIFY => {
                 let casted_event: &xcb::DestroyNotifyEvent =
                     unsafe { xcb::cast_event(event as &xcb::GenericEvent) };
-                layout.remove_window(casted_event.window())
+                layout.remove_window(casted_event.window());
+                manage_windows(&connection, &layout);
             }
             _ => {}
         }

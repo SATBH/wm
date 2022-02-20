@@ -73,7 +73,7 @@ impl Connection {
     pub fn set_window_focus(&self, window: xcb::Window) {
         xcb::xproto::set_input_focus(
             &self.connection,
-            xcb::xproto::INPUT_FOCUS_POINTER_ROOT as u8,
+            xcb::xproto::INPUT_FOCUS_PARENT as u8,
             window,
             xcb::base::CURRENT_TIME,
         );
