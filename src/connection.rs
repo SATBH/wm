@@ -32,15 +32,20 @@ impl Connection {
         self.connection.wait_for_event()
     }
 
+    /// Non-blocking operation that returns an X event whenever it occurs.
+    pub fn poll_event(&self) -> Option<xcb::base::Event<xcb::ffi::xcb_generic_event_t>> {
+        self.connection.poll_for_event()
+    }
+
     /// Attaches an event listener into the root window of the Xsession. Fails if
     /// another window manager is already running
     pub fn connect_as_window_manager(&self) {
         use xcb::{
-            CW_EVENT_MASK, EVENT_MASK_SUBSTRUCTURE_NOTIFY, EVENT_MASK_SUBSTRUCTURE_REDIRECT,
+            CW_EVENT_MASK, EVENT_MASK_SUBSTRUCTURE_NOTIFY, EVENT_MASK_SUBSTRUCTURE_REDIRECT, EVENT_MASK_ENTER_WINDOW
         };
         self.set_root_attributes_checked(&[(
             CW_EVENT_MASK,
-            EVENT_MASK_SUBSTRUCTURE_NOTIFY | EVENT_MASK_SUBSTRUCTURE_REDIRECT,
+            EVENT_MASK_SUBSTRUCTURE_NOTIFY | EVENT_MASK_SUBSTRUCTURE_REDIRECT | EVENT_MASK_ENTER_WINDOW,
         )]);
     }
 
@@ -75,6 +80,15 @@ impl Connection {
             &self.connection,
             xcb::xproto::INPUT_FOCUS_PARENT as u8,
             window,
+            xcb::base::CURRENT_TIME,
+        );
+    }
+
+    pub fn set_root_focus(&self) {
+        xcb::xproto::set_input_focus(
+            &self.connection,
+            xcb::xproto::INPUT_FOCUS_PARENT as u8,
+            self.get_screen().root(),
             xcb::base::CURRENT_TIME,
         );
     }

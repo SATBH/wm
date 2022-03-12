@@ -8,6 +8,7 @@ pub trait Layout {
     fn get_geometries(&self, viewport: &Geometry) -> Vec<(xcb::Window, Geometry)>;
     fn add_window(&mut self, window: xcb::Window);
     fn remove_window(&mut self, window: xcb::Window);
+    fn get_windows(&self) -> Vec<xcb::Window>;
 }
 
 /*
@@ -63,8 +64,17 @@ impl Layout for StackLayout {
         acc
     }
 
-    fn add_window(&mut self, window: xcb::Window) {
-        self.windows.push(window)
+    fn get_windows(&self) -> Vec<xcb::Window> {
+        self.windows.clone()
+    }
+
+    fn add_window(&mut self, new_window: xcb::Window) {
+        for window in self.get_windows().into_iter() {
+            if window == new_window {
+                return;
+            }
+        }
+        self.windows.push(new_window)
     }
 
     fn remove_window(&mut self, window: xcb::Window) {
